@@ -11,6 +11,6 @@ class User(BaseModel):
     last_name: Annotated[str, StringConstraints(max_length=50)]
     email: Annotated[str, StringConstraints(max_length=50)]
     created_by: Annotated[str, StringConstraints(max_length=50)]
-    created_ts: DateTime
+    created_at: DateTime
     updated_by: Annotated[str, StringConstraints(max_length=50)]
-    updated_ts: DateTime
+    updated_at: DateTime
