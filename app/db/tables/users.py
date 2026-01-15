@@ -12,11 +12,11 @@ class Users(Base):
     last_name: Mapped[str] = mapped_column(String(50))
     email: Mapped[str] = mapped_column(String(50))
     created_by: Mapped[str] = mapped_column(String(50))
-    created_ts: Mapped[datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), default=func.now()
     )
     updated_by: Mapped[str] = mapped_column(String(50))
-    updated_ts: Mapped[datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), default=func.now()
     )
 
