@@ -1,6 +1,6 @@
 from datetime import datetime
 from .base import Base
-from sqlalchemy import String, TIMESTAMP, func
+from sqlalchemy import String, TIMESTAMP, func, TEXT
 from sqlalchemy.orm import Mapped, mapped_column
 
 
@@ -11,6 +11,7 @@ class Users(Base):
     first_name: Mapped[str] = mapped_column(String(50))
     last_name: Mapped[str] = mapped_column(String(50))
     email: Mapped[str] = mapped_column(String(50))
+    password: Mapped[str] = mapped_column(TEXT)
     created_by: Mapped[str] = mapped_column(String(50))
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), default=func.now()

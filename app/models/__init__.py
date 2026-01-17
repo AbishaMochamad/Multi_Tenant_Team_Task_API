@@ -1,1 +1,1 @@
-from .user import User as User
+from .user_model import UserModel as UserModel, CreateUserModel as CreateUserModel
