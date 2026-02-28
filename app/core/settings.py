@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     db_user: str
     db_password: str
     db_port: str
+    secret_key: str
+    algorithm: str
 
 
 settings = Settings()

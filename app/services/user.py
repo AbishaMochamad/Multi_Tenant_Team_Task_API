@@ -1,12 +1,13 @@
 from sqlalchemy import select, insert
 from sqlalchemy.orm import Session
 
-from app.core import settings
+from app.core import settings, get_password_hash, verify_password
 from app.db import Users
 from app.models import CreateUserModel, UserModel
-from argon2 import PasswordHasher
 
-ph = PasswordHasher()
+from pydantic import EmailStr, StringConstraints
+
+from typing import Annotated
 
 
 def fetch_users(db: Session) -> list[UserModel]:
@@ -18,7 +19,7 @@ def fetch_users(db: Session) -> list[UserModel]:
 
 
 def add_user(db: Session, new_user: CreateUserModel) -> UserModel:
-    hashed_password = ph.hash(password=new_user.password.get_secret_value())
+    hashed_password = get_password_hash(password=new_user.password.get_secret_value())
 
     statement = (
         insert(Users)
@@ -38,3 +39,20 @@ def add_user(db: Session, new_user: CreateUserModel) -> UserModel:
     db.commit()
 
     return UserModel.model_validate(result)
+
+
+def verify_user(
+    db: Session,
+    email: Annotated[EmailStr, StringConstraints(max_length=50)],
+    password: str,
+):
+    statement = select(Users).where(Users.email == email)
+
+    user = db.execute(statement=statement).scalar_one_or_none()
+
+    if not user:
+        return None
+    if not verify_password(plain_password=password, hashed_password=user.password):
+        return None
+
+    return user

@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Request
+from typing import Annotated
+from fastapi import Depends, FastAPI, Request
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import JSONResponse
 from .api import users_router
 from datetime import datetime, timezone
@@ -6,6 +8,8 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 
 
 app = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @app.exception_handler(Exception)
@@ -28,6 +32,11 @@ async def integrity_error_handler(request, exc):
 @app.exception_handler(OperationalError)
 async def database_error_handler(request, exc):
     return JSONResponse(status_code=500, content={"detail": str(exc.orig)})
+
+
+@app.get("/items/")
+async def read_items(token: Annotated[str, Depends(oauth2_scheme)]):
+    return {"token": token}
 
 
 @app.get("/")
