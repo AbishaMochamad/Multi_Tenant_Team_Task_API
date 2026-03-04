@@ -6,12 +6,13 @@ from pwdlib import PasswordHash
 
 password_hash = PasswordHash.recommended()
 
+dummy_password = password_hash.hash(settings.dummy_hash)
 
-def verify_password(plain_password, hashed_password):
-    return password_hash.verify(password_hash, hashed_password)
+def verify_password(plain_password: str, hashed_password: str):
+    return password_hash.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password):
+def get_password_hash(password: str):
     return password_hash.hash(password=password)
 
 

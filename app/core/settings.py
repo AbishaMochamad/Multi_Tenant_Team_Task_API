@@ -9,8 +9,10 @@ class Settings(BaseSettings):
     db_user: str
     db_password: str
     db_port: str
+    dummy_hash: str
     secret_key: str
     algorithm: str
+    access_token_expire_minutes: int
 
 
-settings = Settings()
+settings = Settings() # type: ignore Values initialize by the env. file
