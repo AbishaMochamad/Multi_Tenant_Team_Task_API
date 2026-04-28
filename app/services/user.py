@@ -1,13 +1,9 @@
 from sqlalchemy import select, insert
 from sqlalchemy.orm import Session
 
-from app.core import settings, get_password_hash, verify_password, dummy_password
+from app.core import settings, get_password_hash
 from app.db import Users
 from app.models import CreateUserModel, UserModel
-
-from pydantic import EmailStr, StringConstraints
-
-from typing import Annotated
 
 
 def fetch_users(db: Session) -> list[UserModel]:
@@ -46,17 +42,3 @@ def get_user(db: Session, email: str | None):
     user = db.execute(statement=statement).scalar_one_or_none()
     return user
 
-def authenticate_user(
-    db: Session,
-    email: Annotated[EmailStr, StringConstraints(max_length=50)],
-    password: str,
-):
-    user = get_user(db=db, email=email)
-
-    if not user:
-        verify_password(plain_password=password, hashed_password=dummy_password)
-        return None
-    if not verify_password(plain_password=password, hashed_password=user.password):
-        return None
-
-    return user
