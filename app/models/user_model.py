@@ -1,7 +1,7 @@
 from typing import Annotated
 from pydantic import ConfigDict, StringConstraints, EmailStr, SecretStr, BaseModel, Field
 
-from app.models.commons import Audit
+from app.models.commons import Audit, Token
 
 
 class CreateUserModel(BaseModel):
@@ -15,3 +15,10 @@ class UserModel(CreateUserModel, Audit):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+
+
+class UserModelWithAccessToken(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    user: UserModel
+    token: Token

@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.core import settings
 from app.core.utilities.utilities import create_access_token
 from app.db import get_db
-from app.models import LoginRequest, RegisterRequest, CreateUserModel, UserModel
+from app.models import LoginRequest, RegisterRequest, CreateUserModel, UserModel, UserModelWithAccessToken
 from app.models.commons.token import Token
 from app.services import add_user
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -32,8 +32,25 @@ def register(register_form: RegisterRequest, db: Session = Depends(get_db)) -> U
 
 
 @authentication_router.post("/login")
-def login(login_form: LoginRequest, db: Session = Depends(get_db)):
-    pass
+def login(login_form: LoginRequest, db: Session = Depends(get_db)) -> UserModelWithAccessToken:
+    user = authenticate_user(db=db, email=login_form.email, password=login_form.password.get_secret_value())
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+
+    return UserModelWithAccessToken(
+        user=UserModel.model_validate(user),
+        token=Token(access_token=access_token)
+    )    
 
 
 @authentication_router.post("/token")
@@ -52,4 +69,4 @@ async def login_for_access_token(
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
-    return Token(access_token=access_token, token_type="bearer")
+    return Token(access_token=access_token)

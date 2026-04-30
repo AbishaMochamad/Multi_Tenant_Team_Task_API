@@ -4,7 +4,8 @@ from .authentication_model import (
 )
 from .user_model import (
     UserModel as UserModel, 
-    CreateUserModel as CreateUserModel
+    CreateUserModel as CreateUserModel,
+    UserModelWithAccessToken as UserModelWithAccessToken
 )
 from .commons import (
     Token as Token,
